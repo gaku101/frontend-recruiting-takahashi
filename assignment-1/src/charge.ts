@@ -9,42 +9,47 @@ export type Receipt = {
 };
 
 export type Payment = {
-  type: string;
+  type: PaymentType;
   percentage?: number;
   amount?: number;
 };
+
+const PAYMENT_TYPE = {
+  CASH: 'CASH',
+  COUPON: 'COUPON',
+} as const;
+
+type PaymentType = typeof PAYMENT_TYPE[keyof typeof PAYMENT_TYPE];
 
 export function charge(invoice: Invoice, payments: Payment[]) {
   const total = invoice.total;
   let deposit = 0;
 
-  payments
-    .sort((payment) => (payment.type !== 'CASH' ? -1 : 1))
-    .map((payment) => {
-      if (payment.type === 'COUPON') {
-        if (payment.percentage != null) {
-          deposit += Math.floor(total * (payment.percentage / 100));
-        } else {
-          deposit += payment.amount || 0;
-        }
-      } else {
-        if (deposit >= total) {
-          throw new Error('OverCharge');
-        }
-        deposit += payment.amount || 0;
-      }
-    });
+  /** クーポン払いの処理(現金払いの処理より先に行う) */
+  const couponPayments = payments.filter((payment) => payment.type === PAYMENT_TYPE.COUPON);
+  couponPayments.forEach((couponPayment) => {
+    if (couponPayment.percentage) {
+      // パーセント値引きの場合
+      deposit += Math.floor(total * (couponPayment.percentage / 100));
+    } else {
+      // 現金値引きの場合
+      deposit += couponPayment.amount || 0;
+    }
+  });
+
+  /** 現金払いの処理 */
+  const cashPayments = payments.filter((payment) => payment.type === PAYMENT_TYPE.CASH);
+  // クーポンで全額払える場合かつ現金での支払いがあればエラー
+  if (deposit >= total && cashPayments.length) throw new Error('OverCharge');
+  cashPayments.forEach((cashPayment) => {
+    deposit += cashPayment.amount || 0;
+  });
+
   if (total > deposit) {
     throw new Error('Shortage');
   }
 
-  let isCoupon = true;
-  for (let i = 0; i < payments.length; i++) {
-    if (payments[i].type !== 'COUPON') {
-      isCoupon = false;
-      continue;
-    }
-  }
-  if (isCoupon) return { total, deposit, change: 0 };
+  /** クーポンのみで支払いの場合はお釣りを返さない */
+  if (!cashPayments.length) return { total, deposit, change: 0 };
   return { total: total, deposit: deposit, change: deposit - total };
 }
