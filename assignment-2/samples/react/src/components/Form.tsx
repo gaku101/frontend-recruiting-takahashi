@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import styles from "./Form.module.scss"
 import { InputText } from "./InputText"
+import { SelectBox } from "./SelectBox"
 
 export const Form: React.FC = () => {
   /** 各入力欄のstate */
@@ -17,6 +18,16 @@ export const Form: React.FC = () => {
   const [zipValidation, setZipValidation] = useState("")
   const [prefectureValidation, setPrefectureValidation] = useState("")
   const [address1Validation, setAddress1Validation] = useState("")
+
+  /** セレクトボックスに渡す都道府県データ */
+  const [prefectures, setPrefectures] = useState<string[]>([])
+  useEffect(() => {
+    fetch("http://geoapi.heartrails.com/api/json?method=getPrefectures")
+      .then((res) => res.json())
+      .then((data) => {
+        setPrefectures(data.response.prefecture)
+      })
+  }, [])
 
   return (
     <div className={styles.formContainer}>
@@ -49,6 +60,12 @@ export const Form: React.FC = () => {
       </div>
       <div className={styles.inputAreaContainer}>
         <label>都道府県</label>
+        <SelectBox
+          options={prefectures}
+          selected={prefecture}
+          setOption={setPrefecture}
+          validation={prefectureValidation}
+        />
       </div>
       <div className={styles.inputAreaContainer}>
         <label>市区町村・番地</label>

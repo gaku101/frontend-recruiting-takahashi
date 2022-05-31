@@ -1,0 +1,36 @@
+.selectContainer {
+  position: relative;
+  width: 230px;
+  //  下向き三角アイコン
+  &::after {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 12px solid #9c9c9c;
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+  }
+  & > select {
+    width: 100%;
+    padding: 8px 8px 7px;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    // セレクトボックスのデフォルトのアイコンを削除
+    appearance: none;
+    -webkit-appearance: none;
+  }
+}
+
+.validation {
+  display: block;
+  font-size: 10px;
+  color: #fb0000;
+  text-align: start;
+}
+
+.placeholder {
+  color: #d3d3d3;
+}
