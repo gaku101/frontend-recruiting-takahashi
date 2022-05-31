@@ -1,0 +1,21 @@
+.inputTextContainer {
+  width: 230px;
+  & > input {
+    box-sizing: border-box;
+    width: 230px;
+    border: 1px solid #e2e2e2;
+    border-radius: 5px;
+    padding: 8px 8px 7px;
+    font-size: 12px;
+    display: block;
+    &::placeholder {
+      color: #d3d3d3;
+    }
+  }
+  & > span {
+    display: block;
+    font-size: 10px;
+    color: #fb0000;
+    text-align: start;
+  }
+}
