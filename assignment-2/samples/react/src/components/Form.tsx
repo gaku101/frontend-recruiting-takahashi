@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styles from "./Form.module.scss"
 import { InputText } from "./InputText"
 import { SelectBox } from "./SelectBox"
 import { Button } from "./Button"
+import { useValidation } from "../utils/useValidation"
+import { useDidUpdateEffect } from "../utils/useDidUpdateEffect"
 
 export const Form: React.FC = () => {
   /** 各入力欄のstate */
@@ -30,8 +32,57 @@ export const Form: React.FC = () => {
       })
   }, [])
 
+  /** バリデーションメソッドの初期化 */
+  const {
+    nameRules,
+    emailRules,
+    zipRules,
+    prefectureRules,
+    address1Rules,
+    validateForm,
+  } = useValidation()
+
   /** フォームのバリデーションに引っ掛かっているかどうかのstate */
   const [isValidForm, setIsValidForm] = useState(true)
+
+  /** 各入力欄が正しい値になっているかどうかのstate */
+  const isValidName = useRef(false)
+  const isValidEmail = useRef(false)
+  const isValidZip = useRef(false)
+  const isValidPrefecture = useRef(false)
+  const isValidAddress1 = useRef(false)
+  const isValidList = [
+    isValidName,
+    isValidEmail,
+    isValidZip,
+    isValidPrefecture,
+    isValidAddress1,
+  ]
+
+  /** 各入力欄のバリデーション */
+  useDidUpdateEffect(() => {
+    isValidName.current = nameRules(name, setNameValidation)
+  }, [name])
+  useDidUpdateEffect(() => {
+    isValidEmail.current = emailRules(email, setEmailValidation)
+  }, [email])
+  useDidUpdateEffect(() => {
+    isValidZip.current = zipRules(zip, setZipValidation)
+  }, [zip])
+  useDidUpdateEffect(() => {
+    isValidPrefecture.current = prefectureRules(
+      prefecture,
+      setPrefectureValidation
+    )
+  }, [prefecture])
+  useDidUpdateEffect(() => {
+    isValidAddress1.current = address1Rules(address1, setAddress1Validation)
+  }, [address1])
+
+  /** フォーム全体のバリデーション */
+  useDidUpdateEffect(() => {
+    validateForm(isValidList, setIsValidForm)
+  }, [name, email, zip, prefecture, address1])
 
   /** ボタン連打防止用のフラグ */
   const [isPushedButton, setIsPushedButton] = useState(false)

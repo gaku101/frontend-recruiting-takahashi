@@ -18,7 +18,14 @@ export const InputText: React.FC<Props> = (props) => {
   )
   return (
     <div className={styles.inputTextContainer}>
-      <input type='text' value={keyword} onChange={handleChangeKeyword} placeholder={placeholder} />
+      <input
+        // バリデーションに引っ掛かっていたらスタイル変更
+        className={validation ? styles.invalidInput : ""}
+        type='text'
+        value={keyword}
+        onChange={handleChangeKeyword}
+        placeholder={placeholder}
+      />
       <span>{validation}</span>
     </div>
   )
