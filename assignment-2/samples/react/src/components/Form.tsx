@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styles from "./Form.module.scss"
 import { InputText } from "./InputText"
 import { SelectBox } from "./SelectBox"
+import { Button } from "./Button"
 
 export const Form: React.FC = () => {
   /** 各入力欄のstate */
@@ -28,6 +29,16 @@ export const Form: React.FC = () => {
         setPrefectures(data.response.prefecture)
       })
   }, [])
+
+  /** フォームのバリデーションに引っ掛かっているかどうかのstate */
+  const [isValidForm, setIsValidForm] = useState(true)
+
+  /** ボタン連打防止用のフラグ */
+  const [isPushedButton, setIsPushedButton] = useState(false)
+
+  const onClickButton = () => {
+    setIsPushedButton(true)
+  }
 
   return (
     <div className={styles.formContainer}>
@@ -85,7 +96,12 @@ export const Form: React.FC = () => {
         />
       </div>
       <div className={styles.buttonContainer}>
-        <button>登録</button>
+        <Button
+          onClickButton={onClickButton}
+          label='登録'
+          isValid={isValidForm}
+          isPushedButton={isPushedButton}
+        />
       </div>
     </div>
   )

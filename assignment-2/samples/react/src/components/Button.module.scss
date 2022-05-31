@@ -1,0 +1,14 @@
+.button {
+  background-color: #5dd699;
+  color: #ffffff;
+  padding: 12px 38px 13px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  &:disabled {
+    background-color: rgba(93, 214, 105, 0.5);
+  }
+  &:hover {
+    cursor: pointer;
+  }
+}
