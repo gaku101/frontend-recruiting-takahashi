@@ -12,12 +12,12 @@ export const Button: React.FC<Props> = (props) => {
   const handleClick = useCallback(() => {
     onClickButton()
   }, [onClickButton])
-  
+
   return (
     <button
       className={styles.button}
       onClick={handleClick}
-      disabled={isValid || isPushedButton}
+      disabled={!isValid || isPushedButton}
     >
       {label}
     </button>

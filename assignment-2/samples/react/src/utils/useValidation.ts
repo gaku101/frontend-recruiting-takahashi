@@ -1,10 +1,12 @@
 import { Dispatch, SetStateAction, useRef } from "react"
 
 export function useValidation() {
+  /** 一度でも入力欄に入力されているかチェック(未入力なら各バリデーション処理内でreturn) */
   const isInputed = useRef(false)
   const checkIsInputed = (v: string) => {
     if (v && !isInputed.current) isInputed.current = true
   }
+
   const nameRules = (v: string, setName: Dispatch<SetStateAction<string>>) => {
     checkIsInputed(v)
     if (!isInputed.current) return false
@@ -82,18 +84,21 @@ export function useValidation() {
       return true
     }
   }
+
   const validateForm = (
     isValidList: React.MutableRefObject<boolean>[],
     setIsValid: Dispatch<SetStateAction<boolean>>
   ) => {
+    // バリデーションに引っ掛かっている入力欄がないかチェック
     const isInclude = isValidList
       .map((isValid) => isValid.current)
       .includes(false)
+    // チェックした結果によってフォーム全体のバリデーション通過状況をセット
     if (isInclude) {
-      setIsValid(true)
+      setIsValid(false)
       return false
     } else {
-      setIsValid(false)
+      setIsValid(true)
       return true
     }
   }

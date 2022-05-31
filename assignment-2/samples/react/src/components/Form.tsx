@@ -42,8 +42,8 @@ export const Form: React.FC = () => {
     validateForm,
   } = useValidation()
 
-  /** フォームのバリデーションに引っ掛かっているかどうかのstate */
-  const [isValidForm, setIsValidForm] = useState(true)
+  /** フォームのバリデーションを通過しているかどうかのstate */
+  const [isValidForm, setIsValidForm] = useState(false)
 
   /** 各入力欄が正しい値になっているかどうかのstate */
   const isValidName = useRef(false)
