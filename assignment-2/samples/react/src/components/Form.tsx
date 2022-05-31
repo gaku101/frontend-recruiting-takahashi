@@ -88,7 +88,32 @@ export const Form: React.FC = () => {
   const [isPushedButton, setIsPushedButton] = useState(false)
 
   const onClickButton = () => {
+    // ボタン連打防止
     setIsPushedButton(true)
+    const result = validateForm(isValidList, setIsValidForm)
+    // フォームのバリデーションを通過していたら入力内容をPOST
+    if (result) {
+      const body = JSON.stringify({
+        name,
+        email,
+        zip,
+        prefecture,
+        address11: address1,
+        address12: address2,
+      })
+      console.log("body", body)
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      }
+      fetch("https://httpstat.us/201", requestOptions)
+        .then((response) => console.log("response", response))
+        .catch((e) => {
+          console.error(e)
+        })
+        .finally(() => setIsPushedButton(false))
+    }
   }
 
   return (
