@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import styles from "./Form.module.scss"
 import { InputText } from "./InputText"
 import { SelectBox } from "./SelectBox"
@@ -15,13 +15,6 @@ export const Form: React.FC = () => {
   const [address1, setAddress1] = useState("")
   const [address2, setAddress2] = useState("")
 
-  /** バリデーションメッセージのstate */
-  const [nameValidation, setNameValidation] = useState("")
-  const [emailValidation, setEmailValidation] = useState("")
-  const [zipValidation, setZipValidation] = useState("")
-  const [prefectureValidation, setPrefectureValidation] = useState("")
-  const [address1Validation, setAddress1Validation] = useState("")
-
   /** セレクトボックスに渡す都道府県データ */
   const [prefectures, setPrefectures] = useState<string[]>([])
   useEffect(() => {
@@ -32,7 +25,7 @@ export const Form: React.FC = () => {
       })
   }, [])
 
-  /** バリデーションメソッドの初期化 */
+  /** useValidationの初期化 */
   const {
     nameRules,
     emailRules,
@@ -40,48 +33,34 @@ export const Form: React.FC = () => {
     prefectureRules,
     address1Rules,
     validateForm,
+    nameValidation,
+    emailValidation,
+    zipValidation,
+    prefectureValidation,
+    address1Validation,
+    isValidForm,
   } = useValidation()
-
-  /** フォームのバリデーションを通過しているかどうかのstate */
-  const [isValidForm, setIsValidForm] = useState(false)
-
-  /** 各入力欄が正しい値になっているかどうかのstate */
-  const isValidName = useRef(false)
-  const isValidEmail = useRef(false)
-  const isValidZip = useRef(false)
-  const isValidPrefecture = useRef(false)
-  const isValidAddress1 = useRef(false)
-  const isValidList = [
-    isValidName,
-    isValidEmail,
-    isValidZip,
-    isValidPrefecture,
-    isValidAddress1,
-  ]
 
   /** 各入力欄のバリデーション */
   useDidUpdateEffect(() => {
-    isValidName.current = nameRules(name, setNameValidation)
+    nameRules(name)
   }, [name])
   useDidUpdateEffect(() => {
-    isValidEmail.current = emailRules(email, setEmailValidation)
+    emailRules(email)
   }, [email])
   useDidUpdateEffect(() => {
-    isValidZip.current = zipRules(zip, setZipValidation)
+    zipRules(zip)
   }, [zip])
   useDidUpdateEffect(() => {
-    isValidPrefecture.current = prefectureRules(
-      prefecture,
-      setPrefectureValidation
-    )
+    prefectureRules(prefecture)
   }, [prefecture])
   useDidUpdateEffect(() => {
-    isValidAddress1.current = address1Rules(address1, setAddress1Validation)
+    address1Rules(address1)
   }, [address1])
 
   /** フォーム全体のバリデーション */
   useDidUpdateEffect(() => {
-    validateForm(isValidList, setIsValidForm)
+    validateForm()
   }, [name, email, zip, prefecture, address1])
 
   /** ボタン連打防止用のフラグ */
@@ -90,7 +69,7 @@ export const Form: React.FC = () => {
   const onClickButton = () => {
     // ボタン連打防止
     setIsPushedButton(true)
-    const result = validateForm(isValidList, setIsValidForm)
+    const result = validateForm()
     // フォームのバリデーションを通過していたら入力内容をPOST
     if (result) {
       const body = JSON.stringify({
